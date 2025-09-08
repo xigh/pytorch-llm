@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import os
 from transformer import TransformerBlock
 from rmsnorm import RMSNorm
 from rope import compute_rope_params
@@ -7,30 +8,35 @@ from rope import compute_rope_params
 class Gemma3Model(nn.Module):
     def __init__(self, cfg):
         super().__init__()
-        assert cfg["layer_types"] is not None and len(cfg["layer_types"]) == cfg["n_layers"]
+        assert cfg["layer_types"] is not None and len(cfg["layer_types"]) == cfg["num_hidden_layers"]
+
+        self.dtype = torch.bfloat16
+        if cfg["torch_dtype"] != "bfloat16":
+            print(f"unexpected dtype {cfg["torch_dtype"]}")
+            os._exit(-1);
 
         # Main model parameters
-        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
+        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["hidden_size"], dtype=self.dtype)
 
         self.blocks = nn.ModuleList([
             TransformerBlock(cfg, attn_type)for attn_type in cfg["layer_types"]
         ])
 
-        self.final_norm = RMSNorm(cfg["emb_dim"], eps=1e-6)
-        self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False, dtype=cfg["dtype"])
+        self.final_norm = RMSNorm(cfg["hidden_size"], eps=1e-6)
+        self.out_head = nn.Linear(cfg["hidden_size"], cfg["vocab_size"], bias=False, dtype=self.dtype)
         self.cfg = cfg
 
         # Reusable utilities
         cos_local, sin_local = compute_rope_params(
             head_dim=cfg["head_dim"],
-            theta_base=cfg["rope_local_base"],
-            context_length=cfg["context_length"],
+            theta_base=cfg["rope_local_base_freq"],
+            context_length=cfg["max_position_embeddings"],
             dtype=torch.float32,
         )
         cos_global, sin_global = compute_rope_params(
             head_dim=cfg["head_dim"],
-            theta_base=cfg["rope_base"],
-            context_length=cfg["context_length"],
+            theta_base=cfg["rope_theta"],
+            context_length=cfg["max_position_embeddings"],
             dtype=torch.float32,
         )
         self.register_buffer("cos_local", cos_local, persistent=False)
@@ -86,7 +92,7 @@ class Gemma3Model(nn.Module):
     def forward(self, input_ids):
         # Forward pass
         b, seq_len = input_ids.shape
-        x = self.tok_emb(input_ids) * (self.cfg["emb_dim"] ** 0.5)
+        x = self.tok_emb(input_ids) * (self.cfg["hidden_size"] ** 0.5)
         mask_global, mask_local = self._create_masks(seq_len, x.device)
 
         for block in self.blocks:
@@ -101,5 +107,5 @@ class Gemma3Model(nn.Module):
             )
 
         x = self.final_norm(x)
-        logits = self.out_head(x.to(self.cfg["dtype"]))
+        logits = self.out_head(x.to(self.dtype))
         return logits

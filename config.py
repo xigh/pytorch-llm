@@ -1,56 +1,35 @@
-import torch
 import os
 from pathlib import Path
 from safetensors.torch import load_file
 from huggingface_hub import hf_hub_download, snapshot_download
 import json
-from modelload import load_weights_into_gemma
 
-USE_INSTRUCT_MODEL = True
-GEMMA3_CONFIG_270M = {
-    "vocab_size": 262_144,
-    "context_length": 32_768,
-    "emb_dim": 640,
-    "n_heads": 4,
-    "n_layers": 18,
-    "hidden_dim": 2048,
-    "head_dim": 256,
-    "qk_norm": True,
-    "n_kv_groups": 1,
-    "rope_local_base": 10_000.0,
-    "rope_base": 1_000_000.0,
-    "sliding_window": 512,
-      "layer_types": [
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "full_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "full_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "sliding_attention",
-        "full_attention"
-    ],
-    "dtype": torch.bfloat16,
-    "query_pre_attn_scalar": 256,
-}
-
-def load_repo_id(model, model_name):
-    if USE_INSTRUCT_MODEL:
+def load_repo_id(model_name, instruct_model):
+    if instruct_model:
         repo_id = f"google/gemma-3-{model_name}-it"
     else:
         repo_id = f"google/gemma-3-{model_name}"
 
     local_dir = Path(repo_id).parts[-1]
+
+    config_file = hf_hub_download(
+        repo_id=repo_id,
+        filename="config.json",
+        local_dir=local_dir,
+    )
+    with open(config_file, "r") as f:
+        config = json.load(f)
+
+    archs = config["architectures"]
+    if False:
+        print("archs", archs)
+    assert "Gemma3ForCausalLM" in archs
+
+    config["qk_norm"] = True
+
+    if False:
+        for k in config:
+            print(f" # {k:30} -> {config[k]} [unknown]")
 
     if model_name == "270m":
         weights_file = hf_hub_download(
@@ -71,7 +50,4 @@ def load_repo_id(model, model_name):
             shard = load_file(shard_path)
             weights_dict.update(shard)
 
-    load_weights_into_gemma(model, GEMMA3_CONFIG_270M, weights_dict)
-    del weights_dict
-
-    return repo_id, local_dir
+    return config, weights_dict, repo_id, local_dir

@@ -3,17 +3,31 @@ import torch
 import json
 
 from model3 import Gemma3Model
-from config import GEMMA3_CONFIG_270M, load_repo_id
+from config import load_repo_id
 from modelsize import model_memory_size
 from tokenizer import load_tokenizer, apply_chat_template
+from modelload import load_weights_into_gemma
 
 SHOW_DEBUG=False
 SHOW_LOGITS=0
 
 # ------------------------------------------------------
 
+model_name = "270m"
+instruct_model = True
+
+print(f"Loading model {model_name}{"-it" if instruct_model else ""} from HF")
+config, weights_dict, repo_id, local_dir = load_repo_id(model_name, instruct_model)
+
+# ------------------------------------------------------
+
 torch.manual_seed(123)
-model = Gemma3Model(GEMMA3_CONFIG_270M)
+model = Gemma3Model(config)
+
+# ------------------------------------------------------
+
+load_weights_into_gemma(model, config, weights_dict)
+del weights_dict
 
 # ------------------------------------------------------
 
@@ -40,12 +54,6 @@ else:
     device = torch.device("cpu")
 
 # ------------------------------------------------------
-
-CHOOSE_MODEL = "270m"
-
-if SHOW_DEBUG:
-    print("Loading model from HF")
-repo_id, local_dir = load_repo_id(model, CHOOSE_MODEL)
 
 if SHOW_DEBUG:
     print("Moving model to device")

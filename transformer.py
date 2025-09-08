@@ -1,4 +1,6 @@
+import torch
 import torch.nn as nn
+import os
 from gpa import GroupedQueryAttention
 from forward import FeedForward
 from rmsnorm import RMSNorm
@@ -8,20 +10,25 @@ class TransformerBlock(nn.Module):
         super().__init__()
         self.attn_type = attn_type
 
+        self.dtype = torch.bfloat16
+        if cfg["torch_dtype"] != "bfloat16":
+            print(f"unexpected dtype {self.dtype}")
+            os._exit(-1);
+
         self.att = GroupedQueryAttention(
-            d_in=cfg["emb_dim"],
-            num_heads=cfg["n_heads"],
-            num_kv_groups=cfg["n_kv_groups"],
+            d_in=cfg["hidden_size"],
+            num_heads=cfg["num_attention_heads"],
+            num_kv_groups=cfg["num_key_value_heads"],
             head_dim=cfg["head_dim"],
             qk_norm=cfg["qk_norm"],
             query_pre_attn_scalar=cfg["query_pre_attn_scalar"],
-            dtype=cfg["dtype"],
+            dtype=self.dtype,
         )
         self.ff = FeedForward(cfg)
-        self.input_layernorm = RMSNorm(cfg["emb_dim"], eps=1e-6)
-        self.post_attention_layernorm = RMSNorm(cfg["emb_dim"], eps=1e-6)
-        self.pre_feedforward_layernorm = RMSNorm(cfg["emb_dim"], eps=1e-6)
-        self.post_feedforward_layernorm = RMSNorm(cfg["emb_dim"], eps=1e-6)
+        self.input_layernorm = RMSNorm(cfg["hidden_size"], eps=1e-6)
+        self.post_attention_layernorm = RMSNorm(cfg["hidden_size"], eps=1e-6)
+        self.pre_feedforward_layernorm = RMSNorm(cfg["hidden_size"], eps=1e-6)
+        self.post_feedforward_layernorm = RMSNorm(cfg["hidden_size"], eps=1e-6)
 
     def forward(
         self,

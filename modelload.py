@@ -19,7 +19,7 @@ def load_weights_into_gemma(model, param_config, params):
         )
 
     # Iterate over transformer layers
-    for l in range(param_config["n_layers"]):
+    for l in range(param_config["num_hidden_layers"]):
         block = model.blocks[l]
         att = block.att
         # Attention projections
