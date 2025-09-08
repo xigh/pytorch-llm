@@ -61,13 +61,13 @@ $ python main.py "How many legs does a duck have?"
 A duck has 4 legs.
 ```
 
-(Yes... our tiny model thinks a duck has 4 legs 🦆😂 — it’s just a toy demo!)
+(Yes... our tiny model thinks a duck has 4 legs 🦆😂 - it’s just a toy demo!)
 
 ---
 
 ## 📖 References
 
-* Sebastian Raschka – *Build a Large Language Model (From Scratch)*
+* Sebastian Raschka - *Build a Large Language Model (From Scratch)*
 * Original repo: [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
 
 ---
