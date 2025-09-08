@@ -61,7 +61,7 @@ $ python main.py "How many legs does a duck have?"
 A duck has 4 legs.
 ```
 
-(Yes... our tiny model thinks a duck has 4 legs 🦆😂 - it’s just a toy demo!)
+(Yes... tiny model thinks a duck has 4 legs 🦆😂 - it’s just a toy demo!)
 
 ---
 
