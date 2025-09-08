@@ -57,7 +57,7 @@ pip install -r requirements.txt
 Example to run an inference request:
 
 ```bash
-python main.py --prompt "Once upon a time..."
+python main.py "Once upon a time..."
 ```
 
 ---
