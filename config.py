@@ -31,7 +31,7 @@ def load_repo_id(model_name, instruct_model):
         for k in config:
             print(f" # {k:30} -> {config[k]} [unknown]")
 
-    if model_name == "270m":
+    if model_name == "270m" or model_name == "1B" or model_name == "4B":
         weights_file = hf_hub_download(
             repo_id=repo_id,
             filename="model.safetensors",

@@ -8,7 +8,13 @@ from rope import compute_rope_params
 class Gemma3Model(nn.Module):
     def __init__(self, cfg):
         super().__init__()
-        assert cfg["layer_types"] is not None and len(cfg["layer_types"]) == cfg["num_hidden_layers"]
+        # assert cfg["layer_types"] is not None and len(cfg["layer_types"]) == cfg["num_hidden_layers"]
+        if "layer_types" in cfg:
+            pass
+        else:
+            cfg["layer_types"] = [
+                "x" for i in range(0, cfg["num_hidden_layers"])
+            ]
 
         self.dtype = torch.bfloat16
         if cfg["torch_dtype"] != "bfloat16":
@@ -19,7 +25,7 @@ class Gemma3Model(nn.Module):
         self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["hidden_size"], dtype=self.dtype)
 
         self.blocks = nn.ModuleList([
-            TransformerBlock(cfg, attn_type)for attn_type in cfg["layer_types"]
+            TransformerBlock(cfg, attn_type) for attn_type in cfg["layer_types"]
         ])
 
         self.final_norm = RMSNorm(cfg["hidden_size"], eps=1e-6)

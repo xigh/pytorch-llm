@@ -13,7 +13,10 @@ SHOW_LOGITS=0
 
 # ------------------------------------------------------
 
-model_name = "270m"
+# model_name = "270m"
+model_name = "1B"
+# model_name = "4B"
+# model_name = "12B"
 instruct_model = True
 
 print(f"Loading model {model_name}{"-it" if instruct_model else ""} from HF")
