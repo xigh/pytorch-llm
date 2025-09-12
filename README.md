@@ -68,7 +68,7 @@ options:
   --compile                     compile model
 ```
 
-### known repo ids :
+### Known working repo ids :
 
 ```bash
 "google/gemma-3-270m-it"
