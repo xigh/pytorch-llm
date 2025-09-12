@@ -66,6 +66,7 @@ options:
   --show-logits k               show {k} logits
   --verbose                     show timings
   --compile                     compile model
+  --force-cpu                   force cpu inference
 ```
 
 ### Known working repo ids :

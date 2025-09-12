@@ -30,6 +30,7 @@ parser.add_argument("--show-debug", action="store_true", help="show debugging lo
 parser.add_argument("--show-logits", type=positive_int, default=0, help="show logits")
 parser.add_argument("--verbose", action="store_true", help="show timings")
 parser.add_argument("--compile", action="store_true", help="compile model")
+parser.add_argument("--force-cpu", action="store_true", help="force cpu inference")
 args = parser.parse_args()
 
 config, weights_dict, local_dir = load_repo_id(args.repo_id)
@@ -61,7 +62,9 @@ if args.show_debug:
 
 # ------------------------------------------------------
 
-if torch.cuda.is_available():
+if args.force_cpu:
+    device = torch.device("cpu")
+elif torch.cuda.is_available():
     device = torch.device("cuda")
 elif torch.backends.mps.is_available():
     device = torch.device("mps")
