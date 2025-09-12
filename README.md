@@ -55,7 +55,8 @@ pip install -r requirements.txt
 ## 🚀 Usage
 
 ```bash
-usage: main.py [-h] [--repo-id REPO_ID] [--prompt PROMPT] [--show-debug] [--show-logits SHOW_LOGITS] [--verbose] [--compile]
+usage: main.py [-h] [--repo-id REPO_ID] [--prompt PROMPT] [--show-debug]
+        [--show-logits SHOW_LOGITS] [--verbose] [--compile]
 
 options:
   -h, --help                    show this help message and exit
