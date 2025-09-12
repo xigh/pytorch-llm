@@ -4,13 +4,8 @@ from safetensors.torch import load_file
 from huggingface_hub import hf_hub_download, snapshot_download
 import json
 
-def load_repo_id(model_name, instruct_model):
-    if instruct_model:
-        repo_id = f"google/gemma-3-{model_name}-it"
-    else:
-        repo_id = f"google/gemma-3-{model_name}"
-
-    local_dir = Path(repo_id).parts[-1]
+def load_repo_id(repo_id):
+    local_dir = f"models/{repo_id}"
 
     config_file = hf_hub_download(
         repo_id=repo_id,
@@ -31,7 +26,7 @@ def load_repo_id(model_name, instruct_model):
         for k in config:
             print(f" # {k:30} -> {config[k]} [unknown]")
 
-    if model_name == "270m" or model_name == "1B" or model_name == "4B":
+    if "Gemma3ForCausalLM" in archs:
         weights_file = hf_hub_download(
             repo_id=repo_id,
             filename="model.safetensors",
@@ -50,4 +45,4 @@ def load_repo_id(model_name, instruct_model):
             shard = load_file(shard_path)
             weights_dict.update(shard)
 
-    return config, weights_dict, repo_id, local_dir
+    return config, weights_dict, local_dir

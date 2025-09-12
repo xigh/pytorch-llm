@@ -6,21 +6,18 @@ from model3 import Gemma3Model
 from config import load_repo_id
 from modelsize import model_memory_size
 from tokenizer import load_tokenizer, apply_chat_template
-from modelload import load_weights_into_gemma
+from load import load_weights_into_gemma
 
 SHOW_DEBUG=False
 SHOW_LOGITS=0
 
 # ------------------------------------------------------
 
-# model_name = "270m"
-model_name = "1B"
-# model_name = "4B"
-# model_name = "12B"
-instruct_model = True
+repo_id = f"google/gemma-3-1B-it"
+# repo_id = f"google/gemma-3-4B"
 
-print(f"Loading model {model_name}{"-it" if instruct_model else ""} from HF")
-config, weights_dict, repo_id, local_dir = load_repo_id(model_name, instruct_model)
+print(f"Loading model {repo_id} from HF")
+config, weights_dict, local_dir = load_repo_id(repo_id)
 
 # ------------------------------------------------------
 
