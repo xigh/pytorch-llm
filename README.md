@@ -54,10 +54,30 @@ pip install -r requirements.txt
 
 ## 🚀 Usage
 
+```bash
+usage: main.py [-h] [--repo-id REPO_ID] [--prompt PROMPT] [--show-debug] [--show-logits SHOW_LOGITS] [--verbose] [--compile]
+
+options:
+  -h, --help                    show this help message and exit
+  --repo-id REPO_ID             ID du modèle à utiliser
+  --prompt PROMPT               prompt
+  --show-debug                  show debugging logs
+  --show-logits k               show {k} logits
+  --verbose                     show timings
+  --compile                     compile model
+```
+
+### known repo ids :
+
+```bash
+"google/gemma-3-270m-it"
+"google/gemma-3-1B-it"
+```
+
 Example to run an inference request:
 
 ```bash
-$ python main.py "How many legs does a duck have?"
+$ python main.py --prompt "How many legs does a duck have?"
 A duck has 4 legs.
 ```
 
