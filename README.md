@@ -70,10 +70,8 @@ options:
 
 ### Known working repo ids :
 
-```bash
-"google/gemma-3-270m-it"
-"google/gemma-3-1B-it"
-```
+- [google/gemma-3-270m-it](https://huggingface.co/google/gemma-3-270m-it)
+- [google/gemma-3-1B-it](https://huggingface.co/google/gemma-3-1b-it)
 
 Example to run an inference request:
 
