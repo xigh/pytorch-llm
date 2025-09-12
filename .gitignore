@@ -6,3 +6,4 @@ gemma-3-*
 Qwen3-*
 qwen3moe*
 .venv
+.cache

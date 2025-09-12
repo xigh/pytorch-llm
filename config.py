@@ -5,6 +5,8 @@ from huggingface_hub import hf_hub_download, snapshot_download
 import json
 
 def load_repo_id(repo_id):
+    print(f"Loading model {repo_id} from HF")
+
     local_dir = f"models/{repo_id}"
 
     config_file = hf_hub_download(
